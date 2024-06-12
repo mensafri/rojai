@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, FlatList } from "react-native";
+import { StyleSheet, Text, View, FlatList, TouchableOpacity } from "react-native";
 import axios from "axios";
 import { screenHeight, screenWidth } from "../utils/scale";
+import { useNavigation } from "@react-navigation/native";
 
 export default function List() {
+	const navigation = useNavigation();
 	const [listSurat, setListSurat] = useState([]);
 
 	useEffect(() => {
@@ -18,6 +20,7 @@ export default function List() {
 	}, []);
 
 	const renderItem = ({ item, index }) => (
+		<TouchableOpacity onPress={() => navigation.navigate("Quran", { surat: item })}>
 		<View style={styles.itemContainer}>
 			<Text style={styles.itemNumber}>{index + 1}</Text>
 			<View style={styles.itemContent}>
@@ -27,6 +30,7 @@ export default function List() {
 				</Text>
 			</View>
 		</View>
+		</TouchableOpacity>
 	);
 
 	return (
