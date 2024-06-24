@@ -17,7 +17,10 @@ export default function Quran() {
     const [recording, setRecording] = useState(null); // Menyimpan objek rekaman
     // const [response, setResponse] = useState(null);
 
-    const api_url = `https://8a35-35-245-157-0.ngrok-free.app/api/v1`;
+    // let newRecording = null;
+    // const [newRecording, setNewRecording] = useState(null);
+
+    const api_url = `https://crisis-cocktail-appearance-telephony.trycloudflare.com/api/v1`;
     useEffect(() => {
         axios.get(`${api_url}/surat/${surat.number}`).then((response) => {
             setListAyat(response.data.data);
@@ -32,88 +35,90 @@ export default function Quran() {
             console.log("Recording stopped");
         } else {
             const newRecording = await startRecording();
-            setRecording(newRecording); // Menyimpan objek rekaman saat mulai merekam
+            // setRecording(newRecording); // Menyimpan objek rekaman saat mulai merekam
             console.log("Recording started");
         }
         setIsRecording(!isRecording); // Mengubah status rekaman setelah toggle
     };
 
-    const startRecording = async () => {
-        try {
-            await Audio.requestPermissionsAsync();
-            const newRecording = new Audio.Recording();
-            await newRecording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
-            await newRecording.startAsync();
+const startRecording = async () => {
+    try {
+        const permission = await Audio.requestPermissionsAsync();
+        if (permission.status !== 'granted') {
+            console.error('Permission to access microphone was denied');
+            return;
+        }
 
-            // Start the interval to send data every 5 seconds
-            const intervalId = setInterval(async () => {
-                try {
-                    // Stop the current recording
-                    await newRecording.stopAndUnloadAsync();
+        // Start the interval to send data every 5 seconds
+        const intervalId = setInterval(async () => {
+            try {
+                let newRecording = new Audio.Recording();
+                await newRecording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+                await newRecording.startAsync();
+                console.log('Recording started');
 
-                    // Get the recording file URI
-                    const uri = newRecording.getURI();
-                    // console.log('uri', uri);
+                // Set recording state
+                setRecording(newRecording);
 
-                    // Fetch the file as a Blob
-                    const response = await fetch(uri);
-                    const blob = await response.blob();
-                    // console.log('blob', blob);
+                // Ensure some time to record
+                await new Promise(resolve => setTimeout(resolve, 3000)); // Record for 3 seconds
 
-                    // Prepare the form data
-                    const formData = new FormData();
-                    formData.append('blob_data', {
-                        uri,
-                        type: 'audio/wav',
-                        name: 'recording.wav'
-                    });
+                // Stop the current recording
+                // console.log('Recording stopped');
+                await newRecording.stopAndUnloadAsync();
+                // Get the recording file URI
+                const uri = await newRecording.getURI();
+                if (!uri) {
+                    throw new Error('No valid audio data has been received');
+                }
 
-                    // Send the recording to the API using Axios
-                    console.log('Sending recording... to the API ' + api_url + '/prediksi-benar');
-                    const apiResponse = await axios.post(`${api_url}/prediksi-benar`, formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    });
-                    if (apiResponse.status === 200) {
-                        if(apiResponse.data.code === 200){
-                        console.log(apiResponse.data)
-                        console.log(apiResponse.data.data)
-                        apiResponse.data.data.map((response)=>{
-                            listAyat.map((surat) =>{
-                                surat.map((ayat)=>{
-                                    ayat.map((ayat_per_kata)=>{
-                                        if(ayat_per_kata.id === response[0].id){
-                                            console.log(response)
-                                            ayat_per_kata.type = response[0].type
+                // Prepare the form data
+                const formData = await new FormData();
+                await formData.append('blob_data', {
+                    uri,
+                    type: 'audio/wav',
+                    name: 'recording.wav'
+                });
+
+                // Send the recording to the API using Axios
+                console.log('Sending recording... to the API ' + api_url + '/prediksi-benar');
+                axios.post(`${api_url}/prediksi-benar`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }).then((response) => {
+                    if (response.data.code === 200) {
+                        response.data.data.map((responseLagi) => {
+                            listAyat.map((surat) => {
+                                surat.map((ayat) => {
+                                    ayat.map((ayat_per_kata) => {
+                                        if (ayat_per_kata.id === responseLagi[0].id) {
+                                            console.log(responseLagi)
+                                            ayat_per_kata.type = responseLagi[0].type
                                         }
                                     })
                                 })
                             })
-                        })
+                        });
                         setListAyat([...listAyat]);
-                    }
-                        // setResponse(apiResponse.data);
-                        console.log('Recording sent successfully');
                     } else {
-                        console.error('Failed to send recording', apiResponse.statusText);
+                        console.log(response.data);
                     }
+                }).catch((error) => {
+                    console.log(error);
+                });
 
-                    // Prepare for the next recording
-                    await newRecording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
-                    await newRecording.startAsync();
-                } catch (error) {
-                    console.error('Failed to send recording', error);
-                    clearInterval(intervalId); // Stop the interval if there's an error
-                }
-            }, 5000);
+            } catch (error) {
+                console.error('Failed to send recording', error);
+                clearInterval(intervalId); // Stop the interval if there's an error
+            }
+        }, 5000);
 
-            return newRecording;
+    } catch (error) {
+        console.error('Failed to start recording', error);
+    }
+};
 
-        } catch (error) {
-            console.error('Failed to start recording', error);
-        }
-    };
 
     const stopRecording = async () => {
         try {
