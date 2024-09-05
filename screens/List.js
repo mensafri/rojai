@@ -2,15 +2,17 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from "react-native";
 import axios from "axios";
 import { screenHeight, screenWidth } from "../utils/scale";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 export default function List() {
+	const route = useRoute();
+	const { api_url } = route.params;
 	const navigation = useNavigation();
 	const [listSurat, setListSurat] = useState([]);
 
 	useEffect(() => {
 		axios
-			.get("http://api.alquran.cloud/v1/surah")
+			.get("https://api.alquran.cloud/v1/surah")
 			.then((response) => {
 				setListSurat(response.data.data);
 			})
@@ -20,7 +22,7 @@ export default function List() {
 	}, []);
 
 	const renderItem = ({ item, index }) => (
-		<TouchableOpacity onPress={() => navigation.navigate("Quran", { surat: item })}>
+		<TouchableOpacity onPress={() => navigation.navigate("Quran", { surat: item , api_url: api_url})}>
 		<View style={styles.itemContainer}>
 			<Text style={styles.itemNumber}>{index + 1}</Text>
 			<View style={styles.itemContent}>

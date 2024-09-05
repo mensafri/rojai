@@ -2,12 +2,15 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import rojai from "../assets/rojai.png";
 import { screenWidth, screenHeight } from "../utils/scale";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 const imageRojai = Image.resolveAssetSource(rojai).uri;
 
 export default function Home() {
+	const route = useRoute();
+	const { api_url } = route.params;
 	const navigation = useNavigation();
+	console.log(api_url);
 
 	return (
 		<View style={styles.container}>
@@ -17,7 +20,7 @@ export default function Home() {
 			/>
 			<TouchableOpacity
 				style={styles.buttonMulaiContainer}
-				onPress={() => navigation.navigate("List")}>
+				onPress={() => navigation.navigate("List", { api_url: api_url })}>
 				<Text style={{ color: "white", fontSize: screenWidth / 30 }}>
 					Mulai
 				</Text>

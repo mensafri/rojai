@@ -21,10 +21,10 @@ export default function Quran() {
 	const route = useRoute();
 	const { surat } = route.params;
 	const [listAyat, setListAyat] = useState([]);
-	// const [recording, setRecording] = useState(null);
+	const [isRecording, setIsRecording] = useState(false);
 	const [checked, setChecked] = useState(1);
 
-	const api_url = `https://hint-parameter-medicare-constitutional.trycloudflare.com/api/v1`;
+	const api_url = `${route.params.api_url}/api/v1`;
 
 	useEffect(() => {
 		axios
@@ -51,6 +51,7 @@ export default function Quran() {
 			);
 			await recording.startAsync();
 			console.log("Recording started");
+			setIsRecording(true);
 		} catch (err) {
 			console.error("Failed to start recording", err);
 		}
@@ -58,6 +59,7 @@ export default function Quran() {
 
 	const stopRecording = async () => {
 		try {
+			setIsRecording(false);
 			await recording.stopAndUnloadAsync();
 			const uri = recording.getURI();
 			console.log("Recording stopped");
@@ -71,10 +73,10 @@ export default function Quran() {
 			});
 
 			console.log(
-				"Sending recording... to the API " + api_url + "/prediksi-benar",
+				"Sending recording... to the API " + api_url + "/prediksi-benar-lagi",
 			);
 			const apiResponse = await axios.post(
-				`${api_url}/prediksi-benar/${checked}`,
+				`${api_url}/prediksi-benar-lagi/${surat.number}/${checked}`,
 				formData,
 				{
 					headers: {
@@ -135,7 +137,7 @@ export default function Quran() {
 								<View
 									key={ayatIndex}
 									style={styles.ayatContainer}>
-									<Text style={styles.ayat}>
+									<Text style={[styles.ayat, {backgroundColor:ayatIndex == checked-1 ? "#f7f7f7": "#fff"}]} >
 										{ayat.map((ayat_per_kata, index) => (
 											<Text
 												key={index}
@@ -152,6 +154,11 @@ export default function Quran() {
 				</ScrollView>
 			</View>
 			<View style={styles.footerContainer}>
+				{!isRecording && (
+					<Text>
+						Ketuk dan tahan untuk merekam
+					</Text>
+				)}
 				<TouchableOpacity
 					onLongPress={startRecording}
 					onPressOut={stopRecording}>
@@ -160,12 +167,13 @@ export default function Quran() {
 						style={[
 							styles.microphone,
 							{
-								opacity: recording ? 0.5 : 1,
+								opacity: isRecording ? 0.5 : 1,
 							},
 						]}
 					/>
 				</TouchableOpacity>
 			</View>
+
 		</View>
 	);
 }
