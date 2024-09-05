@@ -8,31 +8,25 @@ import { useFonts } from "expo-font";
 import SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
 
-
 const Stack = createNativeStackNavigator();
 
 export default function App() {
 	const [loaded] = useFonts({
 		Arab: require("./assets/font/LPMQ IsepMisbah.ttf"),
-	  });
-	
+	});
+
 	const onLayoutRootView = useCallback(async () => {
 		if (loaded) {
-		  await SplashScreen.hideAsync();
+			await SplashScreen.hideAsync();
 		}
-	  }, [loaded]);
-	
-	  if (!loaded) {
+	}, [loaded]);
+
+	if (!loaded) {
 		return null;
-	  }
+	}
 	return (
 		<NavigationContainer onLayout={onLayoutRootView}>
 			<Stack.Navigator>
-				<Stack.Screen
-					options={{ headerShown: false }}
-					name="InputApi"
-					component={InputApi}
-				/>
 				<Stack.Screen
 					options={{ headerShown: false }}
 					name="Home"

@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, FlatList, TouchableOpacity } from "react-native";
+import {
+	StyleSheet,
+	Text,
+	View,
+	FlatList,
+	TouchableOpacity,
+} from "react-native";
 import axios from "axios";
 import { screenHeight, screenWidth } from "../utils/scale";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 export default function List() {
-	const route = useRoute();
-	const { api_url } = route.params;
 	const navigation = useNavigation();
 	const [listSurat, setListSurat] = useState([]);
 
@@ -22,16 +26,17 @@ export default function List() {
 	}, []);
 
 	const renderItem = ({ item, index }) => (
-		<TouchableOpacity onPress={() => navigation.navigate("Quran", { surat: item , api_url: api_url})}>
-		<View style={styles.itemContainer}>
-			<Text style={styles.itemNumber}>{index + 1}</Text>
-			<View style={styles.itemContent}>
-				<Text style={styles.itemTitle}>{item.englishName}</Text>
-				<Text style={styles.itemSubtitle}>
-					{item.revelationType} - {item.numberOfAyahs} ayat
-				</Text>
+		<TouchableOpacity
+			onPress={() => navigation.navigate("Quran", { surat: item })}>
+			<View style={styles.itemContainer}>
+				<Text style={styles.itemNumber}>{index + 1}</Text>
+				<View style={styles.itemContent}>
+					<Text style={styles.itemTitle}>{item.englishName}</Text>
+					<Text style={styles.itemSubtitle}>
+						{item.revelationType} - {item.numberOfAyahs} ayat
+					</Text>
+				</View>
 			</View>
-		</View>
 		</TouchableOpacity>
 	);
 

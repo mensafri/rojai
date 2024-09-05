@@ -24,7 +24,7 @@ export default function Quran() {
 	const [isRecording, setIsRecording] = useState(false);
 	const [checked, setChecked] = useState(1);
 
-	const api_url = `${route.params.api_url}/api/v1`;
+	const api_url = `https://meant-rose-accessed-gaming.trycloudflare.com/api/v1`;
 
 	useEffect(() => {
 		axios
@@ -137,7 +137,14 @@ export default function Quran() {
 								<View
 									key={ayatIndex}
 									style={styles.ayatContainer}>
-									<Text style={[styles.ayat, {backgroundColor:ayatIndex == checked-1 ? "#f7f7f7": "#fff"}]} >
+									<Text
+										style={[
+											styles.ayat,
+											{
+												backgroundColor:
+													ayatIndex == checked - 1 ? "#f7f7f7" : "#fff",
+											},
+										]}>
 										{ayat.map((ayat_per_kata, index) => (
 											<Text
 												key={index}
@@ -154,11 +161,7 @@ export default function Quran() {
 				</ScrollView>
 			</View>
 			<View style={styles.footerContainer}>
-				{!isRecording && (
-					<Text>
-						Ketuk dan tahan untuk merekam
-					</Text>
-				)}
+				{!isRecording && <Text>Ketuk dan tahan untuk merekam</Text>}
 				<TouchableOpacity
 					onLongPress={startRecording}
 					onPressOut={stopRecording}>
@@ -173,7 +176,6 @@ export default function Quran() {
 					/>
 				</TouchableOpacity>
 			</View>
-
 		</View>
 	);
 }

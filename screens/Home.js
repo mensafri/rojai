@@ -7,10 +7,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 const imageRojai = Image.resolveAssetSource(rojai).uri;
 
 export default function Home() {
-	const route = useRoute();
-	const { api_url } = route.params;
 	const navigation = useNavigation();
-	console.log(api_url);
 
 	return (
 		<View style={styles.container}>
@@ -20,7 +17,7 @@ export default function Home() {
 			/>
 			<TouchableOpacity
 				style={styles.buttonMulaiContainer}
-				onPress={() => navigation.navigate("List", { api_url: api_url })}>
+				onPress={() => navigation.navigate("List")}>
 				<Text style={{ color: "white", fontSize: screenWidth / 30 }}>
 					Mulai
 				</Text>
