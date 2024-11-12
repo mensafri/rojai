@@ -24,7 +24,7 @@ export default function Quran() {
 	const [isRecording, setIsRecording] = useState(false);
 	const [checked, setChecked] = useState(1);
 
-	const api_url = `https://vienna-hopefully-slot-reply.trycloudflare.com/api/v1`;
+	const api_url = `https://vienna-hopefully-slot-reply.trycloudflare.com/api/v1`; // api harus diubah ke api backend atau menggunakan input dari screen InpuApi
 
 	useEffect(() => {
 		axios
